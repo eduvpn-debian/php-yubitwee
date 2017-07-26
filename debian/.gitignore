@@ -1,0 +1,5 @@
+debhelper-build-stamp
+files
+php-fkooman-yubitwee.debhelper.log
+php-fkooman-yubitwee.substvars
+php-fkooman-yubitwee/
