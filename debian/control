@@ -14,7 +14,7 @@ Vcs-Git: git://github.com/eduvpn-debian/php-yubitwee.git
 Vcs-Browser: https://github.com/eduvpn-debian/php-yubitwee/
 
 Package: php-fkooman-yubitwee
-Architecture: any
+Architecture: all
 Depends: ${misc:Depends},
  php-common,
  php-curl,
