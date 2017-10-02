@@ -11,21 +11,22 @@
             "fkooman\\YubiTwee\\Tests\\": "tests/"
         }
     },
-    "description": "YubiKey Validator",
+    "description": "YubiKey OTP Validator library",
     "license": "MIT",
     "name": "fkooman/yubitwee",
     "require": {
         "ext-curl": "*",
         "ext-date": "*",
         "ext-hash": "*",
-        "ext-libsodium": "*",
         "ext-pcre": "*",
         "ext-spl": "*",
         "paragonie/constant_time_encoding": "^1|^2",
-        "php": ">=5.4"
+        "paragonie/random_compat": "^1|^2",
+        "php": ">=5.4",
+        "symfony/polyfill-php56": "^1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.7"
+        "phpunit/phpunit": "^5"
     },
     "type": "library"
 }
