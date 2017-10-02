@@ -35,14 +35,14 @@ class CurlMultiHttpClient implements HttpClientInterface
     private $curlMultiChannel;
 
     /** @var array */
-    private $connectionList;
+    private $connectionList = [];
 
     public function __construct()
     {
-        if (false === $this->curlMultiChannel = curl_multi_init()) {
+        if (false === $curlMultiChannel = curl_multi_init()) {
             throw new RuntimeException('unable to create cURL multi channel');
         }
-        $this->connectionList = [];
+        $this->curlMultiChannel = $curlMultiChannel;
     }
 
     public function __destruct()
@@ -50,6 +50,9 @@ class CurlMultiHttpClient implements HttpClientInterface
         curl_multi_close($this->curlMultiChannel);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function get(array $uriList)
     {
         foreach ($uriList as $apiUri) {
@@ -65,10 +68,19 @@ class CurlMultiHttpClient implements HttpClientInterface
             curl_close($curlChannel);
         }
 
+        if (false === $responseData) {
+            throw new RuntimeException('failure performing the HTTP requests');
+        }
+
         return $responseData;
     }
 
-    public static function getCurlChannel($apiUri)
+    /**
+     * @param string $apiUri
+     *
+     * @return resource
+     */
+    private static function getCurlChannel($apiUri)
     {
         if (false === $curlChannel = curl_init()) {
             throw new RuntimeException('unable to create cURL channel');
@@ -88,13 +100,16 @@ class CurlMultiHttpClient implements HttpClientInterface
         return $curlChannel;
     }
 
-    public function executeRequests()
+    /**
+     * @return string|false
+     */
+    private function executeRequests()
     {
         $responseBody = false;
+        $status = 0;
         do {
             $status = curl_multi_exec($this->curlMultiChannel, $active);
-            $info = curl_multi_info_read($this->curlMultiChannel);
-            if (false !== $info) {
+            if (false !== $info = curl_multi_info_read($this->curlMultiChannel)) {
                 if (CURLE_OK === $info['result']) {
                     $responseBody = curl_multi_getcontent($info['handle']);
                 }

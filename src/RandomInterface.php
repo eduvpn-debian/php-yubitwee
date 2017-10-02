@@ -25,5 +25,8 @@ namespace fkooman\YubiTwee;
 
 interface RandomInterface
 {
+    /**
+     * @return string
+     */
     public function getNonce();
 }

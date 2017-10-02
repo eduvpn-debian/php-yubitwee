@@ -36,9 +36,10 @@ class CurlHttpClient implements HttpClientInterface
 
     public function __construct()
     {
-        if (false === $this->curlChannel = curl_init()) {
+        if (false === $curlChannel = curl_init()) {
             throw new RuntimeException('unable to create cURL channel');
         }
+        $this->curlChannel = $curlChannel;
     }
 
     public function __destruct()
@@ -46,11 +47,14 @@ class CurlHttpClient implements HttpClientInterface
         curl_close($this->curlChannel);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function get(array $uriList)
     {
         // pick a random URL from the list
         $apiUri = $uriList[
-            \Sodium\randombytes_uniform(count($uriList) - 1)
+            random_int(0, count($uriList) - 1)
         ];
 
         $curlOptions = [

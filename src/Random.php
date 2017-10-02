@@ -23,12 +23,17 @@
 
 namespace fkooman\YubiTwee;
 
+use ParagonIE\ConstantTime\Hex;
+
 class Random implements RandomInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getNonce()
     {
-        return \Sodium\bin2hex(
-            \Sodium\randombytes_buf(16)
+        return Hex::encode(
+            random_bytes(16)
         );
     }
 }

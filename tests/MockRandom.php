@@ -23,20 +23,20 @@
 
 namespace fkooman\YubiTwee\Tests;
 
-use fkooman\YubiTwee\HttpClientInterface;
+use fkooman\YubiTwee\RandomInterface;
 
-class TestHttpClient implements HttpClientInterface
+class MockRandom implements RandomInterface
 {
     /** @var string */
-    private $testName;
+    private $randomValue;
 
-    public function __construct($testName)
+    public function __construct($randomValue)
     {
-        $this->testName = $testName;
+        $this->randomValue = $randomValue;
     }
 
-    public function get(array $uriList)
+    public function getNonce()
     {
-        return @file_get_contents(sprintf('%s/data/%s', __DIR__, $this->testName));
+        return $this->randomValue;
     }
 }

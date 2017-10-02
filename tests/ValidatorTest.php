@@ -30,7 +30,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 {
     public function testOkay()
     {
-        $v = new Validator(new TestHttpClient('testOkay'), new TestRandom('602bbcad5b9f4790b591cd356a8f9a2b'));
+        $v = new Validator(new MockHttpClient('testOkay'), new MockRandom('602bbcad5b9f4790b591cd356a8f9a2b'));
         $response = $v->verify('vvbvdirtrlvddetcvnndcufrjdjukelgfrtfnnfbijui');
         $this->assertTrue($response->success());
         $this->assertSame('vvbvdirtrlvd', $response->id());
@@ -39,7 +39,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
     public function testReplayedRequest()
     {
-        $v = new Validator(new TestHttpClient('testReplayedRequest'), new TestRandom('602bbcad5b9f4790b591cd356a8f9a2b'));
+        $v = new Validator(new MockHttpClient('testReplayedRequest'), new MockRandom('602bbcad5b9f4790b591cd356a8f9a2b'));
         $response = $v->verify('vvbvdirtrlvddetcvnndcufrjdjukelgfrtfnnfbijui');
         $this->assertFalse($response->success());
         $this->assertSame('REPLAYED_REQUEST', $response->status());
@@ -47,7 +47,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
     public function testReplayedOtp()
     {
-        $v = new Validator(new TestHttpClient('testReplayedOtp'), new TestRandom('602bbcad5b9f4790b591cd356a8f9a2c'));
+        $v = new Validator(new MockHttpClient('testReplayedOtp'), new MockRandom('602bbcad5b9f4790b591cd356a8f9a2c'));
         $response = $v->verify('vvbvdirtrlvddetcvnndcufrjdjukelgfrtfnnfbijui');
         $this->assertFalse($response->success());
         $this->assertSame('REPLAYED_OTP', $response->status());
@@ -55,7 +55,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
     public function testSignedOkay()
     {
-        $v = new Validator(new TestHttpClient('testSignedOkay'), new TestRandom('c49d1205699edc3ff19c12b1f5efbcfb'));
+        $v = new Validator(new MockHttpClient('testSignedOkay'), new MockRandom('c49d1205699edc3ff19c12b1f5efbcfb'));
         $v->setClientId('30972');
         $v->setClientSecret('wbEmh4faKEIOr6ro4wrgaAhskxc=');
         $response = $v->verify('vvbvdirtrlvdvvlfjurvlbudndrugkjukgvuhufuhfnt');

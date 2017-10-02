@@ -28,6 +28,7 @@ use ParagonIE\ConstantTime\Base64;
 
 class Validator
 {
+    /** @var string[] */
     private $hostList = [
         'api.yubico.com',
         'api2.yubico.com',
@@ -51,27 +52,47 @@ class Validator
     public function __construct(HttpClientInterface $httpClient, RandomInterface $random = null)
     {
         $this->httpClient = $httpClient;
-        if (is_null($random)) {
+        if (null === $random) {
             $random = new Random();
         }
         $this->random = $random;
     }
 
+    /**
+     * @param string $clientId
+     *
+     * @return void
+     */
     public function setClientId($clientId)
     {
         $this->clientId = $clientId;
     }
 
+    /**
+     * @param string $clientSecret
+     *
+     * @return void
+     */
     public function setClientSecret($clientSecret)
     {
         $this->clientSecret = $clientSecret;
     }
 
+    /**
+     * @param string[] $hostList
+     *
+     * @return void
+     */
     public function setHosts(array $hostList)
     {
         $this->hostList = $hostList;
     }
 
+    /**
+     * @param string $otp
+     *
+     * @return \fkooman\YubiTwee\ValidatorResponse
+     */
     public function verify($otp)
     {
         self::verifyOtp($otp);
@@ -95,6 +116,11 @@ class Validator
         return $this->verifyResponseBody($responseBody, $requestNonce, $otp);
     }
 
+    /**
+     * @param string $otp
+     *
+     * @return void
+     */
     private static function verifyOtp($otp)
     {
         if (1 !== preg_match('/^[[:print:]]{32,48}$/', $otp)) {
@@ -102,10 +128,16 @@ class Validator
         }
     }
 
+    /**
+     * @param string $requestNonce
+     * @param string $otp
+     *
+     * @return string
+     */
     private function prepareRequestParameters($requestNonce, $otp)
     {
         $queryParameters = [
-            'id' => is_null($this->clientId) ? 1 : $this->clientId,
+            'id' => null === $this->clientId ? 1 : $this->clientId,
             'nonce' => $requestNonce,
             'otp' => $otp,
             'timestamp' => '1',
@@ -113,13 +145,20 @@ class Validator
 
         // when using HTTPS it is not needed to sign the request, but we support
         // it anyway if the API consumer wants it
-        if (!is_null($this->clientSecret)) {
+        if (null !== $this->clientSecret) {
             $queryParameters['h'] = $this->generateHash($queryParameters);
         }
 
         return http_build_query($queryParameters, '', '&');
     }
 
+    /**
+     * @param string $responseBody
+     * @param string $requestNonce
+     * @param string $otp
+     *
+     * @return \fkooman\YubiTwee\ValidatorResponse
+     */
     private function verifyResponseBody($responseBody, $requestNonce, $otp)
     {
         $keyValue = self::parseResponseBody($responseBody);
@@ -132,7 +171,7 @@ class Validator
 
         // when using HTTPS it is not needed to verify the HMAC, but we support
         // it anyway if a clientId/clientSecret are set
-        if (!is_null($this->clientSecret)) {
+        if (null !== $this->clientSecret) {
             $this->verifySignature($keyValue);
         }
 
@@ -151,6 +190,11 @@ class Validator
         return new ValidatorResponse($keyValue);
     }
 
+    /**
+     * @param array $keyValue
+     *
+     * @return string
+     */
     private function generateHash(array $keyValue)
     {
         ksort($keyValue);
@@ -171,7 +215,12 @@ class Validator
         );
     }
 
-    private function parseResponseBody($responseBody)
+    /**
+     * @param string $responseBody
+     *
+     * @return array
+     */
+    private static function parseResponseBody($responseBody)
     {
         if (!is_string($responseBody)) {
             throw new YubiTweeException('the response body from HTTP client MUST be a string');
@@ -202,6 +251,11 @@ class Validator
         return $keyValue;
     }
 
+    /**
+     * @param array $keyValue
+     *
+     * @return void
+     */
     private function verifySignature(array $keyValue)
     {
         $serverHash = $keyValue['h'];
@@ -209,7 +263,7 @@ class Validator
 
         $ourHash = $this->generateHash($keyValue);
 
-        if (0 !== \Sodium\compare($ourHash, $serverHash)) {
+        if (false === hash_equals($ourHash, $serverHash)) {
             throw new YubiTweeException('response signature does not match with expected value');
         }
     }

@@ -28,9 +28,9 @@ interface HttpClientInterface
     /**
      * Fetch the YubiKey OTP validation results from validation server.
      *
-     * @param array $uriList list of URIs to connect to
+     * @param string[] $uriList list of URIs to connect to
      *
-     * @return string|false
+     * @return string
      */
     public function get(array $uriList);
 }
